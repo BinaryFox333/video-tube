@@ -59,8 +59,8 @@ userSchema.pre("save", async function (next) {
 userSchema.methods.comparePassword = async function (password) {
     return await bcrypt.compare(password, this.password);
 };
-userSchema.method.generateAccessToken = async function () {
-    jwt.sign(
+userSchema.methods.generateAccessToken = function () {
+    return jwt.sign(
         {
             _id: this._id,
             email: this.email,
@@ -71,8 +71,8 @@ userSchema.method.generateAccessToken = async function () {
         }
     );
 };
-userSchema.method.generateRefreshToken = async function () {
-    jwt.sign(
+userSchema.methods.generateRefreshToken = function () {
+    return jwt.sign(
         {
             _id: this._id,
         },
