@@ -2,7 +2,7 @@ import asyncHandler from "express-async-handler";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/ApiError.js";
 import { User } from "../models/user.model.js";
-import uploadOnCloudinary from "../utils/Cloudinary.js";
+import { uploadOnCloudinary } from "../utils/Cloudinary.js";
 
 export const registerUser = asyncHandler(async (req, res) => {
     const { username, email, fullName, password } = req.body;
@@ -30,7 +30,15 @@ export const registerUser = asyncHandler(async (req, res) => {
 
     // Uploading files to cloudinary
     const avatarLocalPath = req.files?.avatar[0]?.path;
-    const coverImagePath = req.files?.coverImage[0]?.path;
+    // const coverImageLocalPath = req.files?.coverImage[0]?.path;
+    let coverImageLocalPath;
+    if (
+        req.files &&
+        Array.isArray(req.files.coverImage) &&
+        req.files.coverImage.length > 0
+    ) {
+        coverImageLocalPath = req.files.coverImage[0].path;
+    }
 
     if (!avatarLocalPath) {
         throw new ApiError(400, "Avatar file is required");
