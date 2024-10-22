@@ -307,3 +307,39 @@ export const updateAvatar = asyncHandler(async (req, res) => {
         )
     );
 });
+
+export const updateCoverImage = asyncHandler(async (req, res) => {
+    const coverImageLocalPath = req.file?.path;
+    if (!coverImageLocalPath) {
+        throw new ApiError(400, "Avatar file is required");
+    }
+    // Upload avatar to cloudinary
+    const coverImage = await uploadOnCloudinary(coverImageLocalPath);
+
+    if (!coverImage) {
+        throw new ApiError(500, "Error uploading avatar to cloudinary");
+    }
+
+    // Update user avatar
+    const user = await User.findByIdAndUpdate(
+        req.user?._id,
+        {
+            $set: {
+                coverImage: coverImage.url,
+            },
+        },
+        {
+            new: true,
+        }
+    ).select("-password");
+
+    return res.status(200).json(
+        new ApiResponse(
+            200,
+            {
+                user,
+            },
+            "coverImage updated successfully!"
+        )
+    );
+});
